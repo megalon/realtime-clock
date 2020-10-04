@@ -1,10 +1,7 @@
-const PORT = process.env.PORT || 80;
-const CLOCKPATH = process.env.CLOCKPATH || "/clock";
-
 // --------------------------------
 const settings = {
-	port: PORT,
-	path: CLOCKPATH
+	port: 80,
+	path: "/realtime-clock"
 };
 // --------------------------------
 

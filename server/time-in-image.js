@@ -118,7 +118,7 @@ const TimeInImage = function (app,path) {
 	});
 
 	app.get(path, (req,res)=>{
-		res.redirect(path+"/"+generateCharacters(8)+".png");
+		res.redirect(`${path}/${generateCharacters(8)}.png`);
 	});
 }
 
