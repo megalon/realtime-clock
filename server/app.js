@@ -1,10 +1,10 @@
 const PORT = process.env.PORT || 80;
-const PATH = process.env.PATH || "/clock";
+const CLOCKPATH = process.env.CLOCKPATH || "/clock";
 
 // --------------------------------
 const settings = {
 	port: PORT,
-	path: PATH
+	path: CLOCKPATH
 };
 // --------------------------------
 
