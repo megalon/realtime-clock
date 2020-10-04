@@ -1,0 +1,8 @@
+version: "3.7"
+services:
+  web:
+    image: megalon/realtime-clock
+    build: .
+    ports:
+      - "8890:80"
+    restart: always
