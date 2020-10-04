@@ -1,7 +1,7 @@
 // --------------------------------
 const settings = {
 	port: 8080,
-	path: "/testing"
+	path: "/image"
 };
 // --------------------------------
 
@@ -9,6 +9,11 @@ const express = require("express");
 const TimeInImage = require(__dirname+"/time-in-image");
 
 var app = express();
+
+// so bots crawling root pages would stop throwing errors in logs
+app.get('/', function (req, res) {
+	res.send('nothing here')
+})
 
 var timeInImage = new TimeInImage(app, settings.path);
 timeInImage.onRequest = req=>{

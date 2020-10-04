@@ -65,6 +65,8 @@ setInterval(()=>{
 }, 1000*60*60*24*7);
 // every 7 days clear
 
+let requestsPerMin = 0;
+
 const TimeInImage = function (app,path) {
 	this.onRequest = ()=>{};
 
@@ -85,39 +87,34 @@ const TimeInImage = function (app,path) {
 			return;
 		}
 
-		request.post({
-			url: "https://www.iplocation.net",
-			form: { query: ip },
-			headers: { referer: "https://www.iplocation.net" }
-		}, (err,_,body)=>{
-			if (err) {
-				console.log(err);
-				return res.send();
-			}
-
-			try {
-				body = body
-					.split("ipinfo.io</a>")[1].split("</table>")[0]
-					.split("<tr>")[4].split("<td>");
-
-				let tz = tzlookup(
-					body[3].split("</")[0],
-					body[4].split("</")[0]
-				);
-
-				cachedTzs[ip] = tz;
-
-				let time = moment().tz(tz).format("HH:mm:ss")
-					.split(":").map(x=>parseInt(x));
-
-				makeTimeImageBuffer(time).then(buffer=>{
-					res.end(buffer);
-				});
-			} catch(err) {
-				console.log(err);
-				res.send();
-			}
-		});
+		if (requestsPerMin < 145) {
+			requestsPerMin += 1;
+			request.get({
+				url: "http://ip-api.com/json/"+ip+"?fields=lat,lon",
+				headers: { referer: "http://ip-api.com" }
+			}, (err,_,body)=>{
+				setTimeout(function(){requestsPerMin-=1}, 60000);
+				if (err) {
+					console.log(err);
+					return res.send();
+				}
+				try {
+					latlon = JSON.parse(body);
+					let tz = tzlookup(latlon.lat, latlon.lon);
+					cachedTzs[ip] = tz;
+					let time = moment().tz(tz).format("HH:mm:ss")
+						.split(":").map(x=>parseInt(x));
+					makeTimeImageBuffer(time).then(buffer=>{
+						res.end(buffer);
+					});
+				} catch(err) {
+					console.log(err);
+					res.send();
+				}
+			});
+		} else {
+			res.send();
+		}
 	});
 
 	app.get(path, (req,res)=>{
